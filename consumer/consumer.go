@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/andreals/poc-amqp-wallet/consts"
@@ -27,47 +26,18 @@ func main() {
 	}
 	defer ch.Close()
 
-	msgs, err := ch.Consume(consts.WEBHOOK_QUEUE, "", true, false, false, false, nil)
+	msgs, err := ch.Consume(consts.WALLET_QUEUE, "", true, false, false, false, nil)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	q, err := ch.QueueDeclare(consts.WALLET_QUEUE, false, false, false, false, nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Println(q)
 
 	go func() {
+		var counter int64
+
 		for msg := range msgs {
-			fmt.Printf("Message: %s\n", string(msg.Body))
-			var content map[string]int64
-
-			err := json.Unmarshal(msg.Body, &content)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			content["0"] = 55
-
-			contentMarshal, err := json.Marshal(content)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			err = ch.Publish("", consts.WALLET_QUEUE, false, false, amqp.Publishing{
-				ContentType: "application/json",
-				Body:        contentMarshal,
-			})
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+			fmt.Printf("Message (%d): %s\n", counter, string(msg.Body))
+			counter++
 		}
 	}()
 

@@ -1,0 +1,20 @@
+input:
+  label: ""
+  amqp_0_9:
+    urls:
+        - ${URL_RABBIT_MQ}
+    queue: ${BATCH_QUEUE_NAME}
+
+pipeline:
+  processors:
+  - label: ""
+    unarchive:
+      format: json_array
+
+output:
+  label: ""
+  amqp_0_9:
+    urls:
+        - ${URL_RABBIT_MQ}
+    exchange: ${EXCHANGE_BENTHOS_NAME}
+    key: ${EXCHANGE_BENTHOS_KEY}

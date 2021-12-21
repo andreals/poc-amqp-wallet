@@ -9,7 +9,11 @@ import (
 
 func main() {
 
-	contentJSON := []byte(`{"id": 12}`)
+	contentJSON := []byte(`[
+		{"id": "9856941"},
+		{"id": "9856942"},
+		{"id": "9856943"}
+	]`)
 
 	conn, err := amqp.Dial(consts.URLRabbitMQ)
 	if err != nil {
